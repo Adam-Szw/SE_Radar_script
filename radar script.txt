@@ -1,0 +1,110 @@
+	//Program
+	
+//Settings
+public Program() {
+	Runtime.UpdateFrequency = UpdateFrequency.Update1;	//Refresh rate of missile's guidance system. Faster rate means better behavior but may cause the game to slow down. Update1 - one refresh every game
+														//tick. Update10 - one every 10 ticks. Update100 - one every 100 ticks. Tickrate depends on simspeed which can be changed by settings of save.
+}
+
+//Main method
+public void Main() {
+
+		//block declarations. 0-all items,1-forward,2-backward,3-left,4-right,5-up,6-down
+	List<IMyTerminalBlock>[] cameraList = new List<IMyTerminalBlock>[6];
+	GridTerminalSystem.GetBlocksOfType<IMyCameraBlock>(cameraList[0]);
+	
+	//Store Bank Variables
+	Storage="";
+}
+
+
+	//Auxilary Functions
+
+//Store data
+public void store(float passedFloat, string passedName) {
+	Storage+=passedName+(passedFloat).ToString()+"\n";
+}
+public void store(string passedString, string passedName) {
+	Storage+=passedName+passedString+"\n";
+}
+public void store(Vector3D passedVector, string passedName) {
+	Storage+=passedName+((Convert.ToSingle(passedVector.X)).ToString())+","+((Convert.ToSingle(passedVector.Y)).ToString())+","+((Convert.ToSingle(passedVector.Z)).ToString())+"\n";
+}
+
+//Read data
+public float readF(string passedName){
+	try{
+		List<string> storageList = (Storage.Split('\n')).ToList();
+		string output = "0";
+		foreach(string item in storageList){
+			if(item.Contains(passedName)==true){
+				output=item.Substring(passedName.Length,item.Length-passedName.Length);
+				break;
+			}
+		}
+		return Convert.ToSingle(output);
+	}
+	catch{
+		Echo("Error in reading storage - value is not a float");
+		throw;
+	}
+}
+public string readS(string passedName){
+	try{
+		List<string> storageList = (Storage.Split('\n')).ToList();
+		string output = "";
+		foreach(string item in storageList){
+			if(item.Contains(passedName)==true){
+				output=item.Substring(passedName.Length,item.Length-passedName.Length);
+				break;
+			}
+		}
+		return output;
+	}
+	catch{
+		Echo("Error in reading storage - value is not a string");
+		throw;
+	}
+}
+public Vector3D readV(string passedName){
+	try{
+		List<string> storageList = (Storage.Split('\n')).ToList();
+		string output = "";
+		foreach(string item in storageList){
+			if(item.Contains(passedName)==true){
+				output=item.Substring(passedName.Length,item.Length-passedName.Length);
+				break;
+			}
+		}
+		Vector3D outputVec = new Vector3D(0,0,0);
+		if(output.Count()>0){
+			List<float> vectorList = new List<float>();
+			foreach(string item in (output.Split(',')).ToList()){
+				vectorList.Add(Convert.ToSingle(item));
+			}
+			outputVec = new Vector3D(vectorList[0],vectorList[1],vectorList[2]);
+		}
+		return outputVec;
+	}
+	catch{
+		Echo("Error in reading storage - value is not a vector");
+		throw;
+	}
+}
+
+//Round up data
+public float round(float passedFloat){
+	return (float)Math.Round(passedFloat,5);
+}
+public Vector3D round(Vector3D passedVector){
+	Vector3D outVec = new Vector3D(Math.Round(passedVector.X,5),Math.Round(passedVector.Y,5),Math.Round(passedVector.Z,5));
+	return outVec;
+}
+
+//Transform vectors
+public Vector3D timed(Vector3D passedVector){
+	Vector3D outVec = new Vector3D(Math.Round(passedVector.X/Runtime.TimeSinceLastRun.TotalSeconds,5),
+	Math.Round(passedVector.Y/Runtime.TimeSinceLastRun.TotalSeconds,5),
+	Math.Round(passedVector.Z/Runtime.TimeSinceLastRun.TotalSeconds,5));
+	return outVec;
+}
